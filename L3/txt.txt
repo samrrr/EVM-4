@@ -1,0 +1,45 @@
+Aurora
+Unknown
+7
+7
+7
+Oryol
+Unknown
+13
+-5
+10
+Apostol Piotr
+Galliot
+6
+60
+5
+Sviatoi Pavel
+Galliot
+-66
+9
+4
+Mirotvorest
+Bark
+4
+-5
+10
+Veter
+Bark
+-1
+-1
+5
+Gerkules
+Rowbarge
+7
+0
+56
+Tri Ruimki
+Rowbarge
+0
+5
+42
+Osminog
+Hoy
+100
+14
+-10
