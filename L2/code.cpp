@@ -4,6 +4,9 @@
 #include <locale.h>
 #include <string>
 #include <vector>
+#include <stdlib.h>
+#include <iostream>
+
 using namespace std;
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -119,7 +122,71 @@ vector < string > split_command(string str)
 	return res;
 }
 
+class PIX
+{
+public:
+	char sym;
+	char color;
+	char back_color;
+	char is_mig;
+	PIX()
+	{
+		sym =  '#';
+		color = 15;
+		back_color = 0;
+		is_mig = 1;
+	}
+};
 
+class WIND
+{
+public:
+	vector<PIX> arr;
+	int sizex;
+	int sizey;
+	WIND()
+	{
+		sizex = 0;
+		sizey = 0;
+	}
+	WIND(int x,int y)
+	{
+		sizex = x;
+		sizey = y;
+
+		arr.resize(x*y);
+	}
+	
+	void resize(int x, int y)
+	{
+		vector < PIX > newarr;
+		newarr.resize(x*y);
+		for (int i = 0; i < sizex&&i<x; i++)
+			for (int r = 0; r < sizey&&r < y; r++)
+			{
+				newarr[i + r*x] = arr[i + r*sizex];
+			}
+		sizex = x;
+		sizey = y;
+		arr = newarr;
+	}
+
+	void put(int x, int y,int offsetx,int offsety)
+	{
+		
+	}
+};
+
+void gotoxy(int x, int y)
+{
+	COORD scrn;
+	scrn.X = x; scrn.Y = y;
+	SetConsoleCursorPosition(hConsole, scrn);
+}
+void textcol(int t, int b)
+{
+	SetConsoleTextAttribute(hConsole, WORD(t | (b << 4)));
+}
 void main()
 {
 
@@ -144,105 +211,10 @@ void main()
 		wcscpy(cfi.FaceName, L"Lucida Console");
 		SetCurrentConsoleFontEx(hCon, FALSE, &cfi);
 	}
-	SetConsoleTextAttribute(hConsole, (WORD)(15));
+	textcol(4, 3);
+	gotoxy(10, 10);
+	cout << "ok";
 
+	system("pause");
 
-	int i;     //Введённое число
-	int i_res; //Результат обработки числа
-	bool is_input; //Флажок ввода
-	bool is_res;   //Флажок результата
-	int menu;      //Переменная выбранного пункта меню
-
-	is_input = 0;
-	is_res = 0;
-	i = 0;
-	i_res = 0;
-
-	char buf[1024];
-	bool is_exit = 0;
-
-	do
-	{
-		system("cls");
-		printf("Число:");
-		number.print_base();
-		printf("\n");
-		printf("Битовое представление:\n");
-		number.print_bytes();
-		printf("\n");
-		printf("Тип:");
-		printf(number.name.data());
-		printf("\n");
-		puts("Комманды:");
-		puts("chnt-сменить тип переменной");
-		puts("set <n>-Сменить значение на <n>");
-		puts("setb <bits>-Сменить биты на <bits>");
-		puts("inv <en> <co>-инверсия <co> битов заканчивая битом <en>");
-		puts("exit-выход");
-
-		gets_s(buf, 1024);
-
-		auto arr_com = split_command(buf);
-
-		if (arr_com.size() > 0)
-		{
-			if (arr_com[0] == "exit")
-				is_exit = 1;
-			if (arr_com[0] == "chnt")
-			{
-				if (number.name == "double")
-				{
-					number.name = "short int";
-					number.bytes = sizeof(short int);
-					number.buf = new byte[sizeof(short int)];
-					for (int i = 0; i < sizeof(short int); i++)
-						number.buf[i] = -1;
-					number.p_bytes = 0;
-					number.print_st = "%hd";
-				}
-				else
-				{
-					number.name = "double";
-					number.bytes = sizeof(double);
-					number.buf = new byte[sizeof(double)];
-					for (int i = 0; i < sizeof(double); i++)
-						number.buf[i] = 0;
-					number.p_bytes = 11;
-					number.print_st = "%lf";
-
-
-				}
-			}
-		}
-		if (arr_com.size() > 1)
-		{
-			if (arr_com[0] == "set")
-			{
-				sscanf(arr_com[1].data(), number.print_st.data(), number.buf);
-
-			}
-			if (arr_com[0] == "setb")
-			{
-				for (int i = number.bytes * 8 - 1; i >= 0; i--)
-					number.buf[i / 8] = 0;
-
-
-				for (int i = number.bytes * 8 - 1, r = 0; i >= 0 && r < arr_com[1].size(); i--, r++)
-				{
-					if (arr_com[1][r] == '1')
-						number.buf[i / 8] ^= (1 << (i % 8));
-				}
-
-			}
-		}
-		if (arr_com.size() > 2)
-		{
-			int pos = atoi(arr_com[1].data());
-			int num = atoi(arr_com[2].data());
-
-			number.invert_bits(pos, num);
-
-		}
-
-	} while (!is_exit);
 }
