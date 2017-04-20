@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <signal.h>
+
 using namespace std;
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -40,11 +42,19 @@ void textcol(int t, int b)
 {
 	SetConsoleTextAttribute(hConsole, WORD(t | (b << 4)));
 }
+
+void ob_sgnint(int a)
+{
+	printf("ok");
+	signal(SIGINT, ob_sgnint);
+}
+
 void main()
 {
 
 	setlocale(0, "RU");
 
+	signal(SIGINT,ob_sgnint);
 
 	HANDLE hCon = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	if (hCon != INVALID_HANDLE_VALUE) {
@@ -58,64 +68,53 @@ void main()
 		wcscpy(cfi.FaceName, L"Lucida Console");
 		SetCurrentConsoleFontEx(hCon, FALSE, &cfi);
 	}
-	textcol(4, 3);
-	gotoxy(10, 10);
+	
+	int x, y,xx;
+
+	x = 10;
+	y = 10;
+	xx = 0;
 
 
-	string text = "setInterval(function() {players[0].x += Math.random() * 10 - Math.random() * 10;players[0].y += Math.random() * 10 - Math.random() * 10;if (players[0].x< 10)players[0].x = 10;if (players[0].x>100)players[0].x = 100;if (players[0].y< 10)players[0].y = 10;if (players[0].y>100)players[0].y = 100;socket.broadcast.json.send({ 'event': 'players', 'text' : players });//alert('Прошла 1 секунда');}";
-
-	int outk = 0;
-	int x1, x2, y1, y2;
-
-	x1 = 10;
-	y1 = 12;
-	x2 = 70;
-
-	y2 = 23;
-
-	for (int r = 0; r < 16; r++)
+	while (1)
 	{
-		textcol((r+3)%16, r);
-		cout << col_names[r] << endl;
-	}
-	system("pause");
 
-	int str_out = y1;
-
-	for (int i = 0; i < 8; i++)
-	{
-		for (int r = 0; r < 16; r++)
+		if (_kbhit())
 		{
-			//system("cls");
-			textcol(15, 0);
-			gotoxy(0, 0);
-			cout << "                                           ";
-			gotoxy(0, 1);
-			cout << "                                           ";
-			gotoxy(0, 0);
-			cout << "text color:" << col_names[i];
-			gotoxy(0, 1);
-			cout << "text color:" << col_names[r];
-			int y = str_out;
-				for (int x = x1; x <= x2; x++)
+			char ch = getch();
+
+			if (ch == -32)
+			{
+				ch = getch();
+				if (ch == 72)
 				{
-					gotoxy(x, y);
-					textcol(i,r);
-					cout << text[outk];
-					outk++;
-					if (outk >= text.length())
-						outk=0;
+					xx = -1;
 				}
-			str_out--;
-			if (str_out < y1)
-				str_out = y2;
-			Sleep(300);
+				if (ch == 80)
+				{
+					xx = 1;
+				}
+			}
+
 		}
+		gotoxy(y, x);
+		cout << " ";
+		x = x + xx;
+		if (x < 0)
+			x = 0;
+		if (x >= 16)
+			x=15;
+		gotoxy(y, x);
+		cout << "*";
+
+
+
+		Sleep(300);
+
 	}
 
 
 
-	cout << "ok";
 
 	system("pause");
 
